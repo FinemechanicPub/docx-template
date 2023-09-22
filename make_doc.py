@@ -7,6 +7,22 @@ from json import JSONDecodeError, load
 import jinja2
 
 
+HELP_MESSAGE = (
+    "Jinja2 template processor for DOCX files.\n"
+    "Usage: make_doc source.json template.docx output.docx"
+)
+    
+TEMPLATE_NAME_ERROR = "Заданы одинаковые имена для шаблона и файла результата"
+JSON_ERROR = "Ошибка загрузки JSON: {message}"
+SYNTAX_ERROR = (
+    "Синтаксическая ошибка в шаблоне: {message}\n"
+    "Область ошибки: {context}"
+)
+UNDEFINED_ERROR = "Ошибка определения в шаблоне: {message}"
+TEMPLATE_ERROR = "Ошибка обработки шаблона: {message}"
+GENERAL_ERROR = "Ошибка: {message}"
+               
+
 def s(value):
     if value is None:
         return ""
@@ -36,8 +52,7 @@ def zd(value):
 
 
 if len(argv) < 4:
-    print("Jinja2 template processor for DOCX files.")
-    print("Usage: make_doc source.json template.docx output.docx")
+    print(HELP_MESSAGE)
     exit(1)
 
 json_file = argv[1]
@@ -46,9 +61,7 @@ out_file = argv[3]
 
 try:
     if (template == out_file):
-        raise ValueError(
-            "заданы одинаковые имена для шаблона и файла результата"
-        )
+        raise ValueError(TEMPLATE_NAME_ERROR)
 
     environment = jinja2.Environment()
     environment.filters['s'] = s
@@ -62,18 +75,18 @@ try:
     doc.render(context=json_data, jinja_env=environment)
     doc.save(out_file)
     exit(0)
+
 except JSONDecodeError as error:
-    print(f"Ошибка загрузки JSON: {error}")
-except je.TemplateSyntaxError as error:
-    print(
-        f"Синтаксическая ошибка в шаблоне:"
-        f"{error.message}"
-    )
+    print(JSON_ERROR.format(message=error))
 except je.UndefinedError as error:
-    print(f"Ошибка определения в шаблоне: {error.message}")
+    print(SYNTAX_ERROR.format(message=error.message))
 except je.TemplateError as error:
-    print(f"Ошибка обработки шаблона: {error.message}")
+    if hasattr(error, "docx_context") and hasattr(error, "lineno"):
+        line = [line for line in error.docx_context][3 + min(error.lineno - 4, 0)]
+        print(SYNTAX_ERROR.format(message=error.message, context=line))
+    else:
+        print(TEMPLATE_ERROR(message=error))
 except Exception as error:
-    print(f"Ошибка: {error}")
+    print(GENERAL_ERROR.format(message=error))
 
 exit(1)
