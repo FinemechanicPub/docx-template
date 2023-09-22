@@ -22,14 +22,10 @@ UNDEFINED_ERROR = "Ошибка определения в шаблоне: {messa
 TEMPLATE_ERROR = "Ошибка обработки шаблона: {message}"
 GENERAL_ERROR = "Ошибка: {message}"
 
-def main():
+def process_template():
     if len(argv) < 4:
-        print(HELP_MESSAGE)
-        exit(1)
-
-    json_file = argv[1]
-    template = argv[2]
-    out_file = argv[3]
+        return(HELP_MESSAGE)
+    json_file, template, out_file = argv[1:4]
 
     try:
         if (template == out_file):
@@ -67,7 +63,7 @@ def main():
     
 
 if __name__ == "__main__":
-    message = main()
+    message = process_template()
     if (message):
         print(message)
         exit(1)
