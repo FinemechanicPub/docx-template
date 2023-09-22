@@ -31,3 +31,4 @@ pyinstaller make_doc.spec
 ```shell
 make_doc source.json template.docx output.docx
 ```
+Дополнительные фильтры загружаются из файла [filters.py](filters.py).
