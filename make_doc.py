@@ -11,7 +11,7 @@ HELP_MESSAGE = (
     "Jinja2 template processor for DOCX files.\n"
     "Usage: make_doc source.json template.docx output.docx"
 )
-    
+
 TEMPLATE_NAME_ERROR = "Заданы одинаковые имена для шаблона и файла результата"
 JSON_ERROR = "Ошибка загрузки JSON: {message}"
 SYNTAX_ERROR = (
@@ -22,6 +22,7 @@ UNDEFINED_ERROR = "Ошибка определения в шаблоне: {messa
 TEMPLATE_ERROR = "Ошибка обработки шаблона: {message}"
 GENERAL_ERROR = "Ошибка: {message}"
 
+
 def process_template():
     if len(argv) < 4:
         return(HELP_MESSAGE)
@@ -30,12 +31,12 @@ def process_template():
     try:
         if (template == out_file):
             raise ValueError(TEMPLATE_NAME_ERROR)
-        
-        environment = Environment()   
-        
+
+        environment = Environment()
+
         for name, fun in getmembers(filters, isfunction):
             environment.filters[name] = fun
-        
+
         doc = DocxTemplate(template)
 
         with open(json_file, "r", encoding="utf8") as file:
@@ -60,7 +61,7 @@ def process_template():
             return TEMPLATE_ERROR.format(message=error)
     except Exception as error:
         return GENERAL_ERROR.format(message=error)
-    
+
 
 if __name__ == "__main__":
     message = process_template()
