@@ -8,6 +8,7 @@ from json import JSONDecodeError, load
 import filters
 
 HELP_MESSAGE = (
+    "Version 1.1\n"
     "Jinja2 template processor for DOCX files.\n"
     "Usage: make_doc source.json template.docx output.docx"
 )
